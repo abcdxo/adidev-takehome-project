@@ -19,8 +19,10 @@ final class CountryViewModel {
         
         do {
             let fetchedCountries: [Country] = try await NetworkManager.shared.fetch(from: JSONPlaceholderEndpoint.countries.url)
+            print(fetchedCountries)
             self.countries = fetchedCountries
         } catch let error {
+            print(error.localizedDescription)
             self.error = error
         }
     }

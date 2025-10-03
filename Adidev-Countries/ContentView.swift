@@ -8,16 +8,42 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var viewModel = CountryViewModel()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            List {
+                if viewModel.isLoading {
+                    ProgressView()
+                } else if let error = viewModel.error {
+                    ContentUnavailableView("Error", systemImage: "exclamationmark.triangle", description: Text(error.localizedDescription))
+                } else {
+                    ForEach(viewModel.countries) { country in
+                        VStack(alignment: .leading) {
+                            HStack {
+                                Text(country.name + ",")
+                                   
+                                Text(country.region)
+                                
+                                Spacer()
+                                
+                                Text(country.code)
+                            }
+                            
+                            Text(country.capital)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Countries")
+            .task {
+                await viewModel.fetchCountries()
+            }
         }
-        .padding()
-    } 
-}
+    }}
 
 #Preview {
     ContentView()
